@@ -1,6 +1,6 @@
 ---
-title: "[Your Informative Title Here]"
-author: "[your names here]"
+title: "Case Study 1"
+author: "Franchesca Fernandez, Olivia Wang"
 date: "Case Study 1: February 22, 2024"
 format: 
   pdf:

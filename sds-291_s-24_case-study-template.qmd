@@ -32,6 +32,7 @@ _As you write your report, you may wish to reference the guide to typesetting re
 library(tidyverse)
 library(Sleuth2)      # the package containing the data for the case study. you may need to install this package first!
 library(kableExtra)   # for creating nicely formatted tables in Quarto
+library(broom)
 
 # Loading the case study data
 election <- Sleuth2::ex0825
@@ -73,8 +74,56 @@ lm.wine.table <- summary(lm.wine)$coefficients
 # Creating a nicely formatted table from the dataframe using the kable package
 #   You can find more information about this package here: https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf
 lm.wine.table |> kbl(col.names = c("Name for Col. 1", "Name for Col. 2", "Name for Col. 3", "Name for Col. 4"), align = "c", booktabs = T, linesep="", digits = c(2, 2, 2, 4)) |> kable_classic(full_width = F, latex_options = c("HOLD_position"))
+```
+
+```{r}
+ggplot(data = election_wo_pb, 
+       aes(x = Bush2000, y = Buchanan2000)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+
+model_eq <- lm(Buchanan2000 ~ Bush2000, data = election_wo_pb)
+summary(model_eq)
+
+#Bush2000 estimate = 3.482e-03
+#Intercept estimate = 6.557e+01
+#equation: y = 0.00348x + 65.57
+
+predict(model_eq, interval = "prediction", level = 0.95)
+prediction <- predict(model_eq, newdata = data.frame(Bush2000 = 152846), interval = "prediction", level = 0.95)
+```
+
+```{r}
+# LINE assumptions check
+library(performance)
+library(see)
+library(patchwork)
+library(qqplotr)
+
+linearity_check <- check_model(model_eq,
+                               check = "linearity",
+                               panel = FALSE
+                               )
+plot(linearity_check)
 
 ```
+
+```{r}
+plot(model_eq, which = 1)
+variance_check <- check_model(model_eq,
+                              check = "homogeneity",
+                              panel = FALSE
+                              )
+plot(variance_check)
+```
+```{r}
+normality_check <- check_model(model_eq,
+                               check = "qq",
+                               panel = FALSE
+                               )
+plot(normality_check, data = model_eq)
+```
+
 
 # R Appendix
 
